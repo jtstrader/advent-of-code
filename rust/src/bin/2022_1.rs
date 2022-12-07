@@ -20,7 +20,7 @@ fn get_elf_info() -> Result<Vec<i32>> {
 
     for s in lines.split('\n') {
         let j = s.trim();
-        if j.len() == 0 {
+        if j.is_empty() {
             v.push(elf);
             elf = 0;
         } else {
