@@ -1,30 +1,40 @@
-use std::fs::File;
-use std::io::{Read, Result};
+use advent_of_code::solve;
 
-fn main() -> Result<()> {
-    let mut elf_info = get_elf_info()?;
-    elf_info.sort_by(|a, b| b.cmp(a));
-
-    println!("Part 1 Answer: {}", elf_info[0]);
-    println!("Part 2 Answer: {:?}", &elf_info[0..3].iter().sum::<i32>());
-
-    Ok(())
+fn main() {
+    solve(part_1, part_2);
 }
 
-fn get_elf_info() -> Result<Vec<i32>> {
-    let mut elf = 0;
-    let mut v: Vec<i32> = Vec::new();
-    let mut f = File::open("./src/data/2022input1.txt")?;
-    let mut lines = String::new();
-    f.read_to_string(&mut lines)?;
+fn part_1(input: &String) -> usize {
+    let (mut elf, mut max_elf) = (0, 0);
 
-    for s in lines.split('\n') {
+    for s in input.split('\n') {
+        let j = s.trim();
+        if j.is_empty() {
+            max_elf = usize::max(elf, max_elf);
+            elf = 0;
+        } else {
+            elf += j.parse::<usize>().unwrap();
+        }
+    }
+
+    if elf != 0 {
+        max_elf = usize::max(elf, max_elf);
+    }
+
+    max_elf
+}
+
+fn part_2(input: &String) -> usize {
+    let mut v: Vec<usize> = Vec::new();
+    let mut elf = 0;
+
+    for s in input.split('\n') {
         let j = s.trim();
         if j.is_empty() {
             v.push(elf);
             elf = 0;
         } else {
-            elf += j.parse::<i32>().unwrap();
+            elf += j.parse::<usize>().unwrap();
         }
     }
 
@@ -32,5 +42,6 @@ fn get_elf_info() -> Result<Vec<i32>> {
         v.push(elf);
     }
 
-    Ok(v)
+    v.sort_by(|a, b| b.cmp(a));
+    v[..3].iter().sum()
 }

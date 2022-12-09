@@ -1,17 +1,21 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{Read, Result};
 
-fn main() -> Result<()> {
-    let input = read_data()?;
-
-    println!("Part 1 Answer: {}", part_1(&input));
-    println!("Part 2 Answer: {}", part_2(&input));
-
-    Ok(())
+use advent_of_code::solve;
+fn main() {
+    solve(part_1, part_2);
 }
 
-fn part_1(input: &Vec<Vec<char>>) -> i32 {
+fn part_1(input: &String) -> i32 {
+    let input: Vec<Vec<char>> = input
+        .lines()
+        .map(|s| {
+            s.trim()
+                .split(' ')
+                .map(|c| c.chars().next().unwrap())
+                .collect()
+        })
+        .collect();
+
     let hit: HashMap<char, i32> = HashMap::from([('A', 1), ('B', 2), ('C', 3)]);
     let res: HashMap<char, i32> = HashMap::from([('X', 1), ('Y', 2), ('Z', 3)]);
 
@@ -30,7 +34,17 @@ fn part_1(input: &Vec<Vec<char>>) -> i32 {
     score
 }
 
-fn part_2(input: &Vec<Vec<char>>) -> i32 {
+fn part_2(input: &String) -> i32 {
+    let input: Vec<Vec<char>> = input
+        .lines()
+        .map(|s| {
+            s.trim()
+                .split(' ')
+                .map(|c| c.chars().next().unwrap())
+                .collect()
+        })
+        .collect();
+
     let hit: HashMap<char, i32> = HashMap::from([('A', 1), ('B', 2), ('C', 3)]);
     let win: HashMap<char, i32> = HashMap::from([('X', 1), ('Y', 2), ('Z', 3)]);
 
@@ -48,20 +62,4 @@ fn part_2(input: &Vec<Vec<char>>) -> i32 {
             };
     }
     score
-}
-
-fn read_data() -> Result<Vec<Vec<char>>> {
-    let mut lines = String::new();
-    let mut f = File::open("./src/data/2022input2.txt")?;
-    f.read_to_string(&mut lines)?;
-
-    Ok(lines
-        .split('\n')
-        .map(|s| {
-            s.trim()
-                .split(' ')
-                .map(|c| c.chars().next().unwrap())
-                .collect()
-        })
-        .collect())
 }

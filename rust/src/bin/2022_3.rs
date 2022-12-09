@@ -1,19 +1,22 @@
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{Read, Result};
+use advent_of_code::solve;
+use std::collections::{HashMap, HashSet};
 
-fn main() -> Result<()> {
-    let split_rucksack = read_data_part_1()?;
-    let rucksack_threes = read_data_part_2()?;
-
-    println!("Part 1 Answer: {}", part_1(split_rucksack));
-
-    println!("{:#?}", rucksack_threes);
-
-    Ok(())
+fn main() {
+    solve(part_1, part_2);
 }
 
-fn part_1(rucksack: Vec<(String, String)>) -> usize {
+fn part_1(input: &String) -> usize {
+    let rucksack: Vec<(String, String)> = input
+        .lines()
+        .map(|x| {
+            (
+                x[..x.len() / 2].to_string(),
+                x[x.len() / 2..].trim().to_string(),
+            )
+        })
+        .collect();
+
+    // Try using hash map first
     let prio: HashMap<char, usize> = HashMap::from_iter(
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             .chars()
@@ -41,35 +44,37 @@ fn part_1(rucksack: Vec<(String, String)>) -> usize {
     count
 }
 
-fn read_data_part_1() -> Result<Vec<(String, String)>> {
-    let mut s = String::new();
-    let mut f = File::open("./src/data/2022input3.txt")?;
-    f.read_to_string(&mut s)?;
+fn part_2(input: &String) -> usize {
+    let rucksack: Vec<(String, String, String)> = {
+        let mut v: Vec<(String, String, String)> = Vec::new();
+        let mut iter = input.lines();
+        while let Some(s1) = iter.next() {
+            v.push((
+                s1.trim().to_owned(),
+                iter.next().unwrap().trim().to_owned(),
+                iter.next().unwrap().trim().to_owned(),
+            ));
+        }
+        v
+    };
 
-    Ok(s.split('\n')
-        .map(|x| {
-            (
-                x[..x.len() / 2].to_string(),
-                x[x.len() / 2..].trim().to_string(),
-            )
-        })
-        .collect())
-}
+    let mut count: usize = 0;
+    for (r1, r2, r3) in rucksack {
+        let (s1, s2, s3) = (
+            HashSet::<char>::from_iter(r1.chars()),
+            HashSet::<char>::from_iter(r2.chars()),
+            HashSet::<char>::from_iter(r3.chars()),
+        );
 
-fn read_data_part_2() -> Result<Vec<(String, String, String)>> {
-    let mut v: Vec<(String, String, String)> = Vec::new();
-    let mut s = String::new();
-    let mut f = File::open("./src/data/2022input3.txt")?;
-    f.read_to_string(&mut s)?;
-
-    let mut iter = s.split('\n');
-    while let Some(s1) = iter.next() {
-        v.push((
-            s1.trim().to_owned(),
-            iter.next().unwrap().trim().to_owned(),
-            iter.next().unwrap().trim().to_owned(),
-        ));
+        for s in s1 {
+            if s2.contains(&s) && s3.contains(&s) {
+                count += match s.is_uppercase() {
+                    true => s as usize - 'A' as usize + 27,
+                    false => s as usize - 'a' as usize + 1,
+                };
+            }
+        }
     }
 
-    Ok(v)
+    count
 }
